@@ -2,6 +2,8 @@ package ng.org.knowit.chatty;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (isOnline()){
+
+        } else {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+        }
 
         chatIdInputLayout = findViewById(R.id.chatIdTextInputLayout);
 
@@ -34,13 +42,21 @@ public class MainActivity extends AppCompatActivity {
                     chatIdInputLayout.setError(null);
                 }
 
-                if (noError) {
-                    // All fields are valid!
-                    Toast.makeText(MainActivity.this, "Not well", Toast.LENGTH_SHORT).show();
+                if (noError && isOnline()) {
+                    // Field is valid!
+
                 }
             }
 
         });
 
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }
