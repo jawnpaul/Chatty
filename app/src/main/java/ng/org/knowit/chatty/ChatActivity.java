@@ -97,29 +97,36 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public boolean onSubmit(CharSequence input) {
 
-                //Publisher will publish to his own topic
-                String topic = TOPIC;
+                if(!input.toString().trim().isEmpty()){
 
-                //Add the generated character to the end of the message input
-                String payload = input.toString() + generatedChar;
-                byte[] encodedPayload = new byte[0];
-                try {
-                    encodedPayload = payload.getBytes("UTF-8");
-                    MqttMessage mqttmessage = new MqttMessage(encodedPayload);
+                    //Publisher will publish to his own topic
+                    String topic = TOPIC;
 
-                    //Publish to a specific topic; in this case Unique chat ID
-                    client.publish(topic, mqttmessage);
+                    //Add the generated character to the end of the message input
+                    String payload = input.toString() + generatedChar;
+                    byte[] encodedPayload = new byte[0];
+                    try {
+                        encodedPayload = payload.getBytes("UTF-8");
+                        MqttMessage mqttmessage = new MqttMessage(encodedPayload);
 
-                    Date date = Calendar.getInstance().getTime();
+                        //Publish to a specific topic; in this case Unique chat ID
+                        client.publish(topic, mqttmessage);
 
-                    User user = new User("John", "df", null);
-                    Message message1 = new Message("Will", input.toString(), date, user);
+                        Date date = Calendar.getInstance().getTime();
 
-                    sentMessageAdapter.addToStart(message1, true);
+                        User user = new User("John", "df", null);
+                        Message message1 = new Message("Will", input.toString(), date, user);
 
-                } catch (UnsupportedEncodingException | MqttException e) {
-                    e.printStackTrace();
+                        sentMessageAdapter.addToStart(message1, true);
+
+                    } catch (UnsupportedEncodingException | MqttException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
+
 
                 return true;
             }
