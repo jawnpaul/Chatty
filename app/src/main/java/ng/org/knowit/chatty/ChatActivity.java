@@ -1,5 +1,6 @@
 package ng.org.knowit.chatty;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +13,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
+import com.google.firebase.ml.naturallanguage.smartreply.FirebaseSmartReply;
+import com.google.firebase.ml.naturallanguage.smartreply.FirebaseTextMessage;
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestion;
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestionResult;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -29,6 +37,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import ng.org.knowit.chatty.Models.Message;
@@ -50,6 +59,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private String TOPIC;
 
+    private List<FirebaseTextMessage> mFirebaseTextMessages;
+
+    private FirebaseSmartReply mFirebaseSmartReply;
+
 
     private ImageLoader mImageLoader;
     private static final String TAG = ChatActivity.class.getSimpleName();
@@ -58,6 +71,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        mFirebaseSmartReply = FirebaseNaturalLanguage.getInstance().getSmartReply();
 
         mMessagesList = new MessagesList(this);
         mMessagesList = findViewById(R.id.messagesList);
@@ -118,6 +133,9 @@ public class ChatActivity extends AppCompatActivity {
                         Message message1 = new Message("Will", input.toString(), date, user);
 
                         sentMessageAdapter.addToStart(message1, true);
+
+                        //Add the message to conversation history for Firebase smart reply
+                        mFirebaseTextMessages.add(FirebaseTextMessage.createForLocalUser(input.toString(), System.currentTimeMillis()));
 
                     } catch (UnsupportedEncodingException | MqttException e) {
                         e.printStackTrace();
@@ -204,6 +222,9 @@ public class ChatActivity extends AppCompatActivity {
             Message message1 = new Message("Doe", messageToDisplay, date, user);
 
             sentMessageAdapter.addToStart(message1, true);
+
+            mFirebaseTextMessages.add(FirebaseTextMessage.createForRemoteUser(messageToDisplay, System.currentTimeMillis(), "a"));
+            suggestReplies();
         }
 
 
@@ -249,5 +270,33 @@ public class ChatActivity extends AppCompatActivity {
     private char generateChar(){
         Random r = new Random();
         return (char)(r.nextInt(26) + 'a');
+    }
+
+    private void suggestReplies(){
+        mFirebaseSmartReply.suggestReplies(mFirebaseTextMessages)
+                .addOnSuccessListener(new OnSuccessListener<SmartReplySuggestionResult>() {
+            @Override
+            public void onSuccess(SmartReplySuggestionResult result) {
+                if (result.getStatus() == SmartReplySuggestionResult.STATUS_NOT_SUPPORTED_LANGUAGE) {
+                    // The conversation's language isn't supported, so the
+                    // the result doesn't contain any suggestions.
+                } else if (result.getStatus() == SmartReplySuggestionResult.STATUS_SUCCESS) {
+                    // Task completed successfully
+                    // ...
+
+                    for (SmartReplySuggestion suggestion : result.getSuggestions()) {
+                        String replyText = suggestion.getText();
+
+                    }
+                }
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Task failed with an exception
+                        // ...
+                    }
+                });
     }
 }

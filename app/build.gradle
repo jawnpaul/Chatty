@@ -22,6 +22,11 @@ android {
             url "https://repo.eclipse.org/content/repositories/paho-releases/"
         }
     }
+
+    aaptOptions {
+        noCompress "tflite"
+    }
+
 }
 
 dependencies {
@@ -43,4 +48,10 @@ dependencies {
 
     //ChatKit
     implementation 'com.github.stfalcon:chatkit:0.3.3'
+
+    //Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-ml-natural-language:19.0.0'
+    implementation 'com.google.firebase:firebase-ml-natural-language-smart-reply-model:19.0.0'
 }
+apply plugin: 'com.google.gms.google-services'
