@@ -53,5 +53,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.google.firebase:firebase-ml-natural-language:19.0.0'
     implementation 'com.google.firebase:firebase-ml-natural-language-smart-reply-model:19.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }
 apply plugin: 'com.google.gms.google-services'

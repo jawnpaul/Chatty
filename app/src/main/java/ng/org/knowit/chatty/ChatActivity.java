@@ -3,12 +3,15 @@ package ng.org.knowit.chatty;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -35,15 +38,17 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import ng.org.knowit.chatty.Adapter.SuggestionAdapter;
 import ng.org.knowit.chatty.Models.Message;
 import ng.org.knowit.chatty.Models.User;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements SuggestionAdapter.OnListItemClickListener{
 
     MessagesList mMessagesList;
 
@@ -61,7 +66,13 @@ public class ChatActivity extends AppCompatActivity {
 
     private List<FirebaseTextMessage> mFirebaseTextMessages;
 
+    private ArrayList<String> suggestionList;
+
     private FirebaseSmartReply mFirebaseSmartReply;
+
+    private RecyclerView mRecyclerView;
+
+    private SuggestionAdapter mSuggestionAdapter;
 
 
     private ImageLoader mImageLoader;
@@ -72,12 +83,30 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+
+
         mFirebaseSmartReply = FirebaseNaturalLanguage.getInstance().getSmartReply();
 
         mMessagesList = new MessagesList(this);
         mMessagesList = findViewById(R.id.messagesList);
         mMessageInput = findViewById(R.id.message_input);
 
+        mRecyclerView = findViewById(R.id.suggestionRecyclerView);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+
+
+
+        mFirebaseTextMessages = new ArrayList<>();
+
+        suggestionList = new ArrayList<>();
+
+        mSuggestionAdapter = new SuggestionAdapter(this, suggestionList, ChatActivity.this);
+
+        mRecyclerView.setAdapter(mSuggestionAdapter);
+
+
+        mRecyclerView.setVisibility(View.INVISIBLE);
 
         generatedChar = generateChar();
 
@@ -209,7 +238,8 @@ public class ChatActivity extends AppCompatActivity {
 
         if (a == generatedChar){
             //do not show message
-
+            mFirebaseTextMessages.add(FirebaseTextMessage.createForRemoteUser(messageContent.substring(0, messageContent.length()-1), System.currentTimeMillis(), "a"));
+            suggestReplies();
         } else {
             //show message
 
@@ -223,8 +253,7 @@ public class ChatActivity extends AppCompatActivity {
 
             sentMessageAdapter.addToStart(message1, true);
 
-            mFirebaseTextMessages.add(FirebaseTextMessage.createForRemoteUser(messageToDisplay, System.currentTimeMillis(), "a"));
-            suggestReplies();
+
         }
 
 
@@ -284,10 +313,14 @@ public class ChatActivity extends AppCompatActivity {
                     // Task completed successfully
                     // ...
 
+                    suggestionList.clear();
                     for (SmartReplySuggestion suggestion : result.getSuggestions()) {
                         String replyText = suggestion.getText();
-
+                        Log.d(TAG, replyText);
+                        suggestionList.add(replyText);
                     }
+                    mSuggestionAdapter.notifyDataSetChanged();
+                    mRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
         })
@@ -298,5 +331,11 @@ public class ChatActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    @Override
+    public void onListItemClick(int position) {
+
+
     }
 }
