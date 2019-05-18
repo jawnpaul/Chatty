@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (noError && isOnline()) {
                     // Field is valid!
-                        subscribe(editTextString.toLowerCase());
+                        subscribe(editTextString.toLowerCase().trim());
                     Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     intent.putExtra("subscribeTo", editTextString.toLowerCase());
 
