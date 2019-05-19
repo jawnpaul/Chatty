@@ -238,8 +238,7 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
         if (a == generatedChar){
             //do not show message
-            mFirebaseTextMessages.add(FirebaseTextMessage.createForRemoteUser(messageContent.substring(0, messageContent.length()-1), System.currentTimeMillis(), "a"));
-            suggestReplies();
+
         } else {
             //show message
 
@@ -253,6 +252,8 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
             sentMessageAdapter.addToStart(message1, true);
 
+            mFirebaseTextMessages.add(FirebaseTextMessage.createForRemoteUser(messageToDisplay, System.currentTimeMillis(), "a"));
+            suggestReplies();
 
         }
 
