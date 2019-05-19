@@ -1,6 +1,7 @@
 package ng.org.knowit.chatty.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
 
     Context mContext;
     ArrayList<String> mStringList;
-    OnListItemClickListener mOnListItemClickListener;
+    private final OnListItemClickListener mOnListItemClickListener;
 
     public SuggestionAdapter(Context context, ArrayList<String> stringList, OnListItemClickListener onListItemClickListener){
         this.mContext = context;
@@ -44,8 +45,6 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
 
         holder.suggestionTextView.setText(mStringList.get(position));
 
-        final String text = holder.suggestionTextView.getText().toString();
-
 
     }
 
@@ -61,12 +60,12 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
             super(view);
 
             suggestionTextView = view.findViewById(R.id.suggestionTextView);
+            view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            suggestionTextView.getText();
             mOnListItemClickListener.onListItemClick(position);
         }
     }

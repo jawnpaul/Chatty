@@ -56,13 +56,12 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
     private char generatedChar;
 
-    private String clientId;
+    private String clientId, TOPIC, selectedReply;
 
     private MqttAndroidClient client;
 
     private MessagesListAdapter<Message> sentMessageAdapter;
 
-    private String TOPIC;
 
     private List<FirebaseTextMessage> mFirebaseTextMessages;
 
@@ -109,6 +108,7 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
         mRecyclerView.setVisibility(View.INVISIBLE);
 
         generatedChar = generateChar();
+
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("subscribeTo")){
@@ -336,6 +336,8 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
     @Override
     public void onListItemClick(int position) {
 
-
+        String selectedReply = suggestionList.get(position);
+        mMessageInput.getInputEditText().setText(" ");
+        mMessageInput.getInputEditText().setText(selectedReply);
     }
 }
