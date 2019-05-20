@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Chatty</string>
+    <string name="error_string">Field must not be empty.</string>
 </resources>
