@@ -28,6 +28,10 @@
         </activity>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="1c57766dc584c3f79a4496a075a3837473679b96" />
     </application>
 
 </manifest>
