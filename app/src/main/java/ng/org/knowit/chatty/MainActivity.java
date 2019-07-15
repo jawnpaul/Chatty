@@ -1,7 +1,5 @@
 package ng.org.knowit.chatty;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -11,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -21,6 +22,8 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Fabric.with(this, new Crashlytics());
 
         if (isOnline()){
             connect();
@@ -61,9 +65,10 @@ public class MainActivity extends AppCompatActivity {
                     chatIdInputLayout.setError(null);
                 }
 
+                // Text input Field is not empty and there is internet connection
                 if (noError && isOnline()) {
-                    // Field is valid!
-                        subscribe(editTextString.toLowerCase().trim());
+                    //Subscribe to the topic
+                    subscribe(editTextString.toLowerCase().trim());
                     Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     intent.putExtra("subscribeTo", editTextString.toLowerCase());
 
@@ -72,12 +77,14 @@ public class MainActivity extends AppCompatActivity {
                 } else if(noError && !isOnline())  {
                     Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
         });
 
     }
 
+    //Method to check for internet connectivity
     private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
+    //Method to connect our broker service
     private void connect(){
 
         clientId = MqttClient.generateClientId();
@@ -113,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Method to subscribe to a specific topic in this case the Unique ID
     private void subscribe(final String topic){
         int qos = 1;
         try {
@@ -126,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken,
-                        Throwable exception) {
+                                      Throwable exception) {
                     // The subscription could not be performed, maybe the user was not
                     // authorized to subscribe on the specified topic e.g. using wildcards
 
