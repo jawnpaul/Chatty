@@ -5,14 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import ng.org.knowit.chatty.R;
 
@@ -43,7 +42,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
     @Override
     public void onBindViewHolder(@NonNull SuggestionViewHolder holder, int position) {
 
-        holder.suggestionTextView.setText(mStringList.get(position));
+        holder.suggestionChip.setText(mStringList.get(position));
 
 
     }
@@ -54,18 +53,19 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
     }
 
     class SuggestionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        final TextView suggestionTextView;
+        final Chip suggestionChip;
 
         public SuggestionViewHolder(View view){
             super(view);
 
-            suggestionTextView = view.findViewById(R.id.suggestionTextView);
+            suggestionChip = view.findViewById(R.id.suggestionChip);
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
+            Log.d("Suggestion adapter", String.valueOf(position));
             mOnListItemClickListener.onListItemClick(position);
         }
     }

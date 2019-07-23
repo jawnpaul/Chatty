@@ -1,11 +1,5 @@
 package ng.org.knowit.chatty;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -14,6 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,12 +56,11 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
     private char generatedChar;
 
-    private String clientId, TOPIC, selectedReply;
+    private String clientId, TOPIC;
 
     private MqttAndroidClient client;
 
     private MessagesListAdapter<Message> sentMessageAdapter;
-
 
     private List<FirebaseTextMessage> mFirebaseTextMessages;
 
@@ -82,8 +81,6 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-
-
         mFirebaseSmartReply = FirebaseNaturalLanguage.getInstance().getSmartReply();
 
         mMessagesList = new MessagesList(this);
@@ -93,8 +90,6 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
         mRecyclerView = findViewById(R.id.suggestionRecyclerView);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-
-
 
         mFirebaseTextMessages = new ArrayList<>();
 
@@ -165,7 +160,6 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
                         //Add the message to conversation history for Firebase smart reply
                         mFirebaseTextMessages.add(FirebaseTextMessage.createForLocalUser(input.toString(), System.currentTimeMillis()));
-
                     } catch (UnsupportedEncodingException | MqttException e) {
                         e.printStackTrace();
                     }
@@ -339,6 +333,7 @@ public class ChatActivity extends AppCompatActivity implements SuggestionAdapter
 
         String selectedReply = suggestionList.get(position);
         mMessageInput.getInputEditText().setText(" ");
+        Log.d(TAG, selectedReply);
         mMessageInput.getInputEditText().setText(selectedReply);
     }
 }

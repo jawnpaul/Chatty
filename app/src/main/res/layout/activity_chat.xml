@@ -14,6 +14,7 @@
         android:layout_above="@id/suggestionRecyclerView" />
 
     <androidx.recyclerview.widget.RecyclerView
+
         android:id="@+id/suggestionRecyclerView"
         android:layout_above="@id/message_input"
         android:layout_width="match_parent"
