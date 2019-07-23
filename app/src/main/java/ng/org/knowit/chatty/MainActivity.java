@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Fabric.with(this, new Crashlytics());
 
         if (isOnline()){
+            Fabric.with(this, new Crashlytics());
             connect();
         } else {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
